@@ -18,7 +18,9 @@ O texto da barra mostra `usado/limite`, acompanhado de `↓` quando o consumo es
 
 Também há um widget de Desktop (tamanho pequeno) com o mesmo resumo — adicione pelo botão direito no Desktop → **Editar Widgets** → "Kiro Usage". O widget só lê um snapshot compartilhado pelo app principal (via App Group); ele não acessa a rede nem as credenciais do Kiro diretamente, então precisa que o app principal esteja rodando e conectado para ter dados atualizados.
 
-Na primeira execução, o app instala um `LaunchAgent` somente para o usuário atual, em `~/Library/LaunchAgents/dev.raffael.kiro-usage.plist`. Ele abre a cópia estável instalada em `~/Applications` a cada login. A opção **Iniciar automaticamente com o macOS** permite desativar ou reativar esse comportamento.
+Na primeira execução, o app instala um `LaunchAgent` somente para o usuário atual, em `~/Library/LaunchAgents/dev.raffael.kiro-usage.plist`, apontando para o caminho de onde o app foi aberto naquela vez — por isso mova `Kiro Usage.app` para `/Applications` (ou `~/Applications`) antes da primeira execução. A opção **Iniciar automaticamente com o macOS** permite desativar ou reativar esse comportamento.
+
+No menu "…" também dá para deixar só o ícone na barra de menus (sem o texto `usado/limite`) e configurar alertas nativos do macOS para um ou mais limites de consumo (50%/75%/90%/100%).
 
 ## Login e privacidade
 
@@ -29,3 +31,7 @@ O monitor tenta renovar automaticamente sessões compatíveis com AWS IAM Identi
 ## Observação técnica
 
 O Kiro não documenta uma API pública de uso para apps de terceiros. Esta versão usa o mesmo endpoint e os mesmos arquivos locais usados pelo aplicativo oficial instalado. Uma futura atualização do Kiro pode exigir um ajuste nesta integração.
+
+## Licença
+
+[MIT](LICENSE).
