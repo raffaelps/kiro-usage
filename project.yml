@@ -1,0 +1,95 @@
+name: KiroUsage
+options:
+  bundleIdPrefix: dev.raffael
+  deploymentTarget:
+    macOS: "14.0"
+
+packages:
+  KiroUsageKit:
+    path: Packages/KiroUsageKit
+
+targets:
+  Kiro Usage:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/KiroUsage
+        excludes:
+          - "KiroUsage.entitlements"
+      - path: Resources/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_NAME: "Kiro Usage"
+        EXECUTABLE_NAME: KiroUsage
+        PRODUCT_MODULE_NAME: KiroUsage
+        PRODUCT_BUNDLE_IDENTIFIER: dev.raffael.kiro-usage
+        INFOPLIST_FILE: Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_ENTITLEMENTS: Sources/KiroUsage/KiroUsage.entitlements
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 2TMMUPY74C
+        MARKETING_VERSION: "1.3.1"
+        CURRENT_PROJECT_VERSION: "8"
+        SWIFT_VERSION: "6.0"
+    dependencies:
+      - package: KiroUsageKit
+      - target: KiroUsageWidgetExtension
+        embed: true
+        codeSign: true
+
+  KiroUsageWidgetExtension:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources/KiroUsageWidget
+        excludes:
+          - "Info.plist"
+          - "KiroUsageWidget.entitlements"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.raffael.kiro-usage.widget
+        INFOPLIST_FILE: Sources/KiroUsageWidget/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_ENTITLEMENTS: Sources/KiroUsageWidget/KiroUsageWidget.entitlements
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 2TMMUPY74C
+        MARKETING_VERSION: "1.3.1"
+        CURRENT_PROJECT_VERSION: "8"
+        SWIFT_VERSION: "6.0"
+        SKIP_INSTALL: NO
+    dependencies:
+      - package: KiroUsageKit
+
+  KiroUsageTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/KiroUsageTests
+    settings:
+      base:
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Kiro Usage.app/Contents/MacOS/KiroUsage"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    dependencies:
+      - target: Kiro Usage
+    scheme:
+      testTargets:
+        - KiroUsageTests
+      gatherCoverageData: false
+
+schemes:
+  Kiro Usage:
+    build:
+      targets:
+        Kiro Usage: all
+        KiroUsageWidgetExtension: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - KiroUsageTests
+    archive:
+      config: Release
