@@ -29,8 +29,9 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Sources/KiroUsage/KiroUsage.entitlements
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 2TMMUPY74C
-        MARKETING_VERSION: "1.3.1"
-        CURRENT_PROJECT_VERSION: "8"
+        ENABLE_HARDENED_RUNTIME: YES
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "6.0"
     dependencies:
       - package: KiroUsageKit
@@ -54,8 +55,9 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Sources/KiroUsageWidget/KiroUsageWidget.entitlements
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 2TMMUPY74C
-        MARKETING_VERSION: "1.3.1"
-        CURRENT_PROJECT_VERSION: "8"
+        ENABLE_HARDENED_RUNTIME: YES
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "6.0"
         SKIP_INSTALL: NO
     dependencies:

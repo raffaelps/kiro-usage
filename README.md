@@ -2,7 +2,13 @@
 
 Um pequeno app nativo que exibe na barra de menus o consumo mensal e o limite de créditos do Kiro.
 
-## Executar
+## Instalar
+
+Baixe o `.dmg` mais recente em [Releases](https://github.com/raffaelps/kiro-usage/releases/latest), abra e arraste **Kiro Usage** para a pasta **Applications**. O app é assinado com Developer ID e notarizado pela Apple, então abre sem avisos do Gatekeeper.
+
+Requisito: macOS 14 (Sonoma) ou mais recente.
+
+## Compilar a partir do código
 
 Requisitos: macOS 14 (Sonoma) ou mais recente, Xcode instalado e [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
 
