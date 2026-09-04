@@ -28,6 +28,17 @@ Na primeira execução, o app instala um `LaunchAgent` somente para o usuário a
 
 No menu "…" também dá para deixar só o ícone na barra de menus (sem o texto `usado/limite`) e configurar alertas nativos do macOS para um ou mais limites de consumo (50%/75%/90%/100%).
 
+## Publicar uma release
+
+Requer também [create-dmg](https://github.com/create-dmg/create-dmg) (`brew install create-dmg`), um certificado **Developer ID Application** e credenciais de notarização salvas no Keychain:
+
+```bash
+xcrun notarytool store-credentials "kiro-usage-notary" --apple-id "seu-apple-id" --team-id 2TMMUPY74C --password "senha-de-app-especifica"
+./release.sh
+```
+
+O `release.sh` arquiva em Release, exporta assinado com Developer ID, notariza o app, cola o ticket, confere com o Gatekeeper e monta o `.dmg` estilizado (fundo em `Resources/dmg-background.png`, gerado por `scripts/make_dmg_background.swift`) em `build/`.
+
 ## Login e privacidade
 
 O app lê a sessão já criada pelo Kiro em `~/.aws/sso/cache/kiro-auth-token.json` e o perfil ativo dentro de `~/Library/Application Support/Kiro`. O token é usado somente em memória para consultar o serviço do Kiro; ele não é copiado nem salvo pelo app.

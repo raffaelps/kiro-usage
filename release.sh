@@ -11,6 +11,11 @@ if ! command -v xcodegen >/dev/null 2>&1; then
     exit 1
 fi
 
+if ! command -v create-dmg >/dev/null 2>&1; then
+    echo "create-dmg não encontrado. Instale com: brew install create-dmg" >&2
+    exit 1
+fi
+
 if ! xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" >/dev/null 2>&1; then
     echo "Credenciais de notarização não configuradas. Rode primeiro:" >&2
     echo "  xcrun notarytool store-credentials \"$NOTARY_PROFILE\" --apple-id <seu-apple-id> --team-id 2TMMUPY74C --password <senha-de-app-especifica>" >&2
@@ -50,26 +55,40 @@ fi
 
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_PATH/Contents/Info.plist")
 
-echo "Montando o .dmg…"
-DMG_STAGE="$BUILD_DIR/dmg-stage"
-rm -rf "$DMG_STAGE"
-mkdir -p "$DMG_STAGE"
-cp -R "$APP_PATH" "$DMG_STAGE/"
-ln -s /Applications "$DMG_STAGE/Applications"
+echo "Enviando o app para notarização (pode levar alguns minutos)…"
+ZIP_PATH="$BUILD_DIR/Kiro-Usage-for-notarization.zip"
+rm -f "$ZIP_PATH"
+ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+xcrun notarytool submit "$ZIP_PATH" --keychain-profile "$NOTARY_PROFILE" --wait
 
+echo "Anexando o ticket de notarização ao app…"
+xcrun stapler staple "$APP_PATH"
+
+echo "Conferindo com o Gatekeeper…"
+spctl -a -vvv --type execute "$APP_PATH"
+
+echo "Montando o .dmg…"
 mkdir -p "$ROOT_DIR/build"
 DMG_PATH="$ROOT_DIR/build/Kiro-Usage-$VERSION.dmg"
 rm -f "$DMG_PATH"
-hdiutil create -volname "Kiro Usage" -srcfolder "$DMG_STAGE" -ov -format UDZO "$DMG_PATH"
 
-echo "Enviando para notarização (pode levar alguns minutos)…"
-xcrun notarytool submit "$DMG_PATH" --keychain-profile "$NOTARY_PROFILE" --wait
+DMG_SOURCE="$BUILD_DIR/dmg-source"
+rm -rf "$DMG_SOURCE"
+mkdir -p "$DMG_SOURCE"
+cp -R "$APP_PATH" "$DMG_SOURCE/"
 
-echo "Anexando o ticket de notarização…"
-xcrun stapler staple "$DMG_PATH"
-
-echo "Conferindo com o Gatekeeper…"
-spctl -a -vvv --type open --context context:primary-signature "$DMG_PATH"
+create-dmg \
+    --volname "Kiro Usage" \
+    --background "$ROOT_DIR/Resources/dmg-background.png" \
+    --window-size 660 400 \
+    --icon-size 128 \
+    --text-size 13 \
+    --icon "Kiro Usage.app" 170 190 \
+    --hide-extension "Kiro Usage.app" \
+    --app-drop-link 490 190 \
+    --no-internet-enable \
+    "$DMG_PATH" \
+    "$DMG_SOURCE"
 
 echo
 echo "Pronto: $DMG_PATH"
