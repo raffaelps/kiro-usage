@@ -77,6 +77,12 @@ final class UsageStore: ObservableObject {
                     UserDefaults.standard.bool(forKey: MenuBarPreferences.alertThresholdKey(for: $0))
                 }
                 alertManager.evaluate(snapshot: snapshot, thresholdPercents: enabledThresholds)
+
+                alertManager.evaluateDailyPace(
+                    snapshot: snapshot,
+                    alertNear: UserDefaults.standard.bool(forKey: MenuBarPreferences.alertNearDailyPaceKey),
+                    alertOver: UserDefaults.standard.bool(forKey: MenuBarPreferences.alertOverDailyPaceKey)
+                )
             }
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription

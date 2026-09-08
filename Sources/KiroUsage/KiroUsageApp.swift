@@ -26,6 +26,8 @@ struct KiroUsageApp: App {
 enum MenuBarPreferences {
     static let iconOnlyKey = "menuBarIconOnly"
     static let alertThresholdPercents = [50, 75, 90, 100]
+    static let alertNearDailyPaceKey = "alertNearDailyPace"
+    static let alertOverDailyPaceKey = "alertOverDailyPace"
 
     static func alertThresholdKey(for percent: Int) -> String {
         "alertThreshold\(percent)"

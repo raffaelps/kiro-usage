@@ -10,6 +10,8 @@ struct UsageMenuView: View {
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 75)) private var alertAt75 = false
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 90)) private var alertAt90 = false
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 100)) private var alertAt100 = false
+    @AppStorage(MenuBarPreferences.alertNearDailyPaceKey) private var alertNearDailyPace = false
+    @AppStorage(MenuBarPreferences.alertOverDailyPaceKey) private var alertOverDailyPace = false
     private let alertManager = UsageAlertManager()
 
     var body: some View {
@@ -63,16 +65,23 @@ struct UsageMenuView: View {
                     )
                     Toggle("Mostrar somente o ícone na barra de menus", isOn: $iconOnly)
                     Divider()
-                    Menu("Alertar ao ultrapassar") {
-                        Toggle("50%", isOn: $alertAt50)
-                        Toggle("75%", isOn: $alertAt75)
-                        Toggle("90%", isOn: $alertAt90)
-                        Toggle("100%", isOn: $alertAt100)
+                    Menu("Alertas") {
+                        Menu("Por total do mês") {
+                            Toggle("50%", isOn: $alertAt50)
+                            Toggle("75%", isOn: $alertAt75)
+                            Toggle("90%", isOn: $alertAt90)
+                            Toggle("100%", isOn: $alertAt100)
+                        }
+                        Divider()
+                        Toggle("Perto do ritmo diário", isOn: $alertNearDailyPace)
+                        Toggle("Ultrapassou o ritmo diário", isOn: $alertOverDailyPace)
                     }
                     .onChange(of: alertAt50) { _, isOn in requestAuthorizationIfNeeded(isOn) }
                     .onChange(of: alertAt75) { _, isOn in requestAuthorizationIfNeeded(isOn) }
                     .onChange(of: alertAt90) { _, isOn in requestAuthorizationIfNeeded(isOn) }
                     .onChange(of: alertAt100) { _, isOn in requestAuthorizationIfNeeded(isOn) }
+                    .onChange(of: alertNearDailyPace) { _, isOn in requestAuthorizationIfNeeded(isOn) }
+                    .onChange(of: alertOverDailyPace) { _, isOn in requestAuthorizationIfNeeded(isOn) }
                     Divider()
                     Button("Encerrar Kiro Usage") { NSApplication.shared.terminate(nil) }
                 } label: {
