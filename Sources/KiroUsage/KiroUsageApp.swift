@@ -4,6 +4,7 @@ import SwiftUI
 struct KiroUsageApp: App {
     @StateObject private var usageStore = UsageStore()
     @StateObject private var launchAtLogin = LaunchAtLoginManager()
+    @StateObject private var updateChecker = UpdateChecker()
     @AppStorage(MenuBarPreferences.iconOnlyKey) private var iconOnly = false
 
     var body: some Scene {
@@ -11,6 +12,7 @@ struct KiroUsageApp: App {
             UsageMenuView()
                 .environmentObject(usageStore)
                 .environmentObject(launchAtLogin)
+                .environmentObject(updateChecker)
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: usageStore.statusSymbol)

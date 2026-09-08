@@ -5,6 +5,7 @@ import SwiftUI
 struct UsageMenuView: View {
     @EnvironmentObject private var store: UsageStore
     @EnvironmentObject private var launchAtLogin: LaunchAtLoginManager
+    @EnvironmentObject private var updateChecker: UpdateChecker
     @AppStorage(MenuBarPreferences.iconOnlyKey) private var iconOnly = false
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 50)) private var alertAt50 = false
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 75)) private var alertAt75 = false
@@ -18,6 +19,10 @@ struct UsageMenuView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
+
+            if updateChecker.isUpdateAvailable, let latest = updateChecker.latestVersion {
+                updateBanner(latestVersion: latest)
+            }
 
             if let snapshot = store.snapshot {
                 usageContent(snapshot)
@@ -100,6 +105,27 @@ struct UsageMenuView: View {
         }
         .padding(18)
         .frame(width: 330)
+    }
+
+    private func updateBanner(latestVersion: String) -> some View {
+        Button {
+            if let url = updateChecker.releaseURL {
+                NSWorkspace.shared.open(url)
+            }
+        } label: {
+            HStack(spacing: 8) {
+                Label("Versão \(latestVersion) disponível", systemImage: "arrow.down.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.primary)
+                Spacer(minLength: 4)
+                Text("Atualizar")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.purple)
+            }
+            .padding(8)
+            .background(.purple.opacity(0.12), in: RoundedRectangle(cornerRadius: 8))
+        }
+        .buttonStyle(.plain)
     }
 
     private var header: some View {
