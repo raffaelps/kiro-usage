@@ -19,18 +19,32 @@ final class UsageStore: ObservableObject {
     init(client: KiroClient = KiroClient()) {
         self.client = client
         alertManager.migrateLegacyThresholdIfNeeded()
-        refreshLoop = Task { [weak self] in
-            await self?.refresh()
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(300))
-                guard !Task.isCancelled else { break }
-                await self?.refresh(silently: true)
-            }
-        }
+        refreshLoop = Self.makeRefreshLoop(for: self)
     }
 
     deinit {
         refreshLoop?.cancel()
+    }
+
+    /// Cancels the current refresh loop and starts a new one, so a change to the
+    /// refresh interval takes effect immediately instead of waiting out whatever
+    /// sleep is already in progress.
+    func restartRefreshLoop() {
+        refreshLoop?.cancel()
+        refreshLoop = Self.makeRefreshLoop(for: self)
+    }
+
+    private static func makeRefreshLoop(for store: UsageStore) -> Task<Void, Never> {
+        Task { [weak store] in
+            await store?.refresh()
+            while !Task.isCancelled {
+                let minutes = UserDefaults.standard.object(forKey: MenuBarPreferences.refreshIntervalKey) as? Int
+                    ?? MenuBarPreferences.defaultRefreshIntervalMinutes
+                try? await Task.sleep(for: .seconds(max(minutes, 1) * 60))
+                guard !Task.isCancelled else { break }
+                await store?.refresh(silently: true)
+            }
+        }
     }
 
     var menuBarText: String {

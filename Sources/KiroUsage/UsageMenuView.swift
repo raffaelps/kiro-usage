@@ -12,6 +12,7 @@ struct UsageMenuView: View {
     @AppStorage(MenuBarPreferences.alertThresholdKey(for: 100)) private var alertAt100 = false
     @AppStorage(MenuBarPreferences.alertNearDailyPaceKey) private var alertNearDailyPace = false
     @AppStorage(MenuBarPreferences.alertOverDailyPaceKey) private var alertOverDailyPace = false
+    @AppStorage(MenuBarPreferences.refreshIntervalKey) private var refreshIntervalMinutes = MenuBarPreferences.defaultRefreshIntervalMinutes
     private let alertManager = UsageAlertManager()
 
     var body: some View {
@@ -64,6 +65,12 @@ struct UsageMenuView: View {
                         )
                     )
                     Toggle("Mostrar somente o ícone na barra de menus", isOn: $iconOnly)
+                    Picker("Atualizar a cada", selection: $refreshIntervalMinutes) {
+                        ForEach(MenuBarPreferences.refreshIntervalOptions, id: \.self) { minutes in
+                            Text(minutes == 1 ? "1 minuto" : "\(minutes) minutos").tag(minutes)
+                        }
+                    }
+                    .onChange(of: refreshIntervalMinutes) { _, _ in store.restartRefreshLoop() }
                     Divider()
                     Menu("Alertas") {
                         Menu("Por total do mês") {

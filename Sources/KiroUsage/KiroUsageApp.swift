@@ -28,6 +28,9 @@ enum MenuBarPreferences {
     static let alertThresholdPercents = [50, 75, 90, 100]
     static let alertNearDailyPaceKey = "alertNearDailyPace"
     static let alertOverDailyPaceKey = "alertOverDailyPace"
+    static let refreshIntervalKey = "refreshIntervalMinutes"
+    static let refreshIntervalOptions = [1, 5, 10, 15, 30]
+    static let defaultRefreshIntervalMinutes = 5
 
     static func alertThresholdKey(for percent: Int) -> String {
         "alertThreshold\(percent)"
