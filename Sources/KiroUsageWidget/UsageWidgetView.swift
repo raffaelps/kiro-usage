@@ -23,10 +23,17 @@ struct UsageWidgetView: View {
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .layoutPriority(1)
                 Spacer(minLength: 4)
-                Image(systemName: paceSymbol(snapshot))
-                    .font(.system(size: 11))
-                    .foregroundStyle(paceColor(snapshot))
+                if let resetDate = snapshot.resetDate {
+                    HStack(spacing: 2) {
+                        Image(systemName: "calendar")
+                        Text(UsageFormatter.resetDateShortString(resetDate))
+                    }
+                    .font(.system(size: 9))
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(1)
+                }
             }
 
             Spacer(minLength: 0)
@@ -45,6 +52,11 @@ struct UsageWidgetView: View {
                 .tint(progressColor(snapshot.progress))
                 .padding(.top, 1)
 
+            if let difference = snapshot.paceDifference() {
+                paceRow(difference: difference, snapshot: snapshot)
+                    .padding(.top, 2)
+            }
+
             HStack(spacing: 4) {
                 Text("\(UsageFormatter.format(snapshot.remaining)) restantes")
                     .lineLimit(1)
@@ -54,18 +66,37 @@ struct UsageWidgetView: View {
             }
             .font(.system(size: 10))
             .foregroundStyle(.secondary)
-
-            if let resetDate = snapshot.resetDate {
-                Label {
-                    Text(UsageFormatter.resetDateString(resetDate))
-                } icon: {
-                    Image(systemName: "calendar")
-                }
-                .font(.system(size: 9))
-                .foregroundStyle(.tertiary)
-                .lineLimit(1)
-            }
         }
+    }
+
+    private func paceRow(difference: Double, snapshot: UsageSnapshot) -> some View {
+        let color = paceColor(snapshot)
+        let isOnPace = abs(difference) < 0.01
+
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 4) {
+                Image(systemName: paceSymbol(snapshot))
+                    .font(.system(size: 14))
+                if !isOnPace {
+                    Text(UsageFormatter.format(abs(difference)))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(1)
+                }
+            }
+            .foregroundStyle(color)
+
+            Text(paceCaption(difference))
+                .font(.system(size: 9, weight: .medium))
+                .foregroundStyle(color.opacity(0.9))
+                .lineLimit(1)
+        }
+    }
+
+    private func paceCaption(_ difference: Double) -> String {
+        if abs(difference) < 0.01 { return "no ritmo mensal" }
+        return difference > 0 ? "acima do ritmo mensal" : "abaixo do ritmo mensal"
     }
 
     private var emptyContent: some View {

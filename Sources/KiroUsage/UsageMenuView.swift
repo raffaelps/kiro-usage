@@ -245,9 +245,12 @@ struct UsageMenuView: View {
                 }
                 Text(paceCaption(difference))
                     .font(.callout.weight(.semibold))
-                Text("Ritmo até hoje: \(UsageStore.format(allowed)) créditos")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Text("Ritmo até hoje: **\(UsageStore.format(allowed)) créditos**")
+                    .font(.callout)
+                    .foregroundStyle(.primary.opacity(0.75))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                    .padding(.top, 2)
             }
             Spacer(minLength: 0)
         }
