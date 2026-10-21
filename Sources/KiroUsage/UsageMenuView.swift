@@ -228,31 +228,39 @@ struct UsageMenuView: View {
     }
 
     private func paceCard(allowed: Double, difference: Double) -> some View {
-        HStack(spacing: 10) {
-            Image(systemName: paceSymbol(difference))
-                .foregroundStyle(paceColor(difference))
+        let color = paceColor(difference)
+        let isOnPace = abs(difference) < 0.01
 
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Até hoje: \(UsageStore.format(allowed)) créditos")
-                    .font(.callout.weight(.medium))
-                Text(paceDescription(difference))
+        return HStack(alignment: .center, spacing: 12) {
+            Image(systemName: paceSymbol(difference))
+                .font(.system(size: 28))
+                .foregroundStyle(color)
+
+            VStack(alignment: .leading, spacing: 2) {
+                if !isOnPace {
+                    Text(UsageStore.format(abs(difference)))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(color)
+                }
+                Text(paceCaption(difference))
+                    .font(.callout.weight(.semibold))
+                Text("Ritmo até hoje: \(UsageStore.format(allowed)) créditos")
                     .font(.caption)
-                    .foregroundStyle(difference > 0 ? .orange : .secondary)
+                    .foregroundStyle(.secondary)
             }
-            Spacer()
+            Spacer(minLength: 0)
         }
-        .padding(10)
-        .background(.quaternary.opacity(0.55), in: RoundedRectangle(cornerRadius: 9))
+        .padding(12)
+        .background(color.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
+        .overlay(RoundedRectangle(cornerRadius: 10).stroke(color.opacity(0.35), lineWidth: 1))
     }
 
-    private func paceDescription(_ difference: Double) -> String {
+    private func paceCaption(_ difference: Double) -> String {
         if abs(difference) < 0.01 {
             return "Exatamente no ritmo mensal"
         }
-        if difference > 0 {
-            return "\(UsageStore.format(difference)) acima do ritmo mensal"
-        }
-        return "\(UsageStore.format(abs(difference))) abaixo do ritmo mensal"
+        return difference > 0 ? "acima do ritmo mensal" : "abaixo do ritmo mensal"
     }
 
     private func paceSymbol(_ difference: Double) -> String {
